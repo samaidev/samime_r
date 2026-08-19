@@ -38,10 +38,12 @@
 
 ### Windows
 
-1. 下载最新版安装包：[samime-setup-2.0.0.exe](https://github.com/samaidev/samime_r/releases/download/v2.0.0/samime-setup-2.0.0.exe)
+1. 下载最新版安装包：[samime-setup-2.0.2.exe](https://github.com/samaidev/samime_r/releases/download/v2.0.2/samime-setup-2.0.2.exe)
    - 或访问 [Releases 页面](https://github.com/samaidev/samime_r/releases) 获取所有版本
 2. **以管理员身份运行**安装包
 3. 安装完成后，按 Win + Space 切换到 Samime 即可使用
+
+> **v2.0.2 更新内容**：内存优化（bigram 扁平化 + dict 移除冗余切片），工作集 RSS 从 1461.7 MB 降至 1340.3 MB（节省 121 MB / 8.3%），未使用 GC 调优，CPU 保持 0%。
 
 ### Linux（IBus）
 
