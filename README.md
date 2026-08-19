@@ -38,7 +38,8 @@
 
 ### Windows
 
-1. 下载最新版 samime-setup-x.x.x.exe（见下方 Releases）
+1. 下载最新版安装包：[samime-setup-2.0.0.exe](https://github.com/samaidev/samime_r/releases/download/v2.0.0/samime-setup-2.0.0.exe)
+   - 或访问 [Releases 页面](https://github.com/samaidev/samime_r/releases) 获取所有版本
 2. **以管理员身份运行**安装包
 3. 安装完成后，按 Win + Space 切换到 Samime 即可使用
 
@@ -82,3 +83,4 @@ SamAI Group 是一家专注于人工智能与中文自然语言处理的科技�
 ## License
 
 Samime 安装包免费提供个人及商业使用。源代码为闭源项目，版权所有 SamAI Group。
+
