@@ -47,23 +47,20 @@
 
 ### Linux（IBus）
 
-一键安装（自动 clone 源码 + 编译 + 注册 IBus）：
+一键安装（下载预编译二进制，无需 Go，无需编译）：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/samaidev/samime_r/main/install.sh | sudo bash
 ```
 
-> **前置依赖**：Go 1.22+ 和 IBus 1.5+。Ubuntu/Debian 可用 `sudo apt install -y golang-go ibus` 安装。
-> 脚本会自动 clone samime 源码到 `/tmp/samime-src`，编译后安装到 `/usr/bin/samime`，注册 IBus 组件并切换引擎。
-> 安装后按 **Super+Space** 切换到 Samime 即可输入中文。
-
-或者从已 clone 的源码目录运行：
-
-```bash
-git clone https://github.com/samaidev/samime.git
-cd samime
-sudo ./install.sh
-```
+> **前置依赖**：IBus 1.5+。Ubuntu/Debian 可用 `sudo apt install -y ibus` 安装。
+> 脚本会从 GitHub Release 下载预编译的 Linux 二进制（~84MB），安装到 `/usr/bin/samime`，注册 IBus 组件。
+> 安装后在**桌面用户终端**（非 sudo）执行：
+> ```bash
+> gsettings set org.freedesktop.ibus.general preload-engines "['xkb:us::eng', 'samime']"
+> ibus restart && sleep 18 && ibus engine samime
+> ```
+> 按 **Super+Space** 切换到 Samime 即可输入中文。
 
 ### macOS
 
