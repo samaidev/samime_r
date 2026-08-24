@@ -47,11 +47,23 @@
 
 ### Linux（IBus）
 
+一键安装（自动 clone 源码 + 编译 + 注册 IBus）：
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/samaidev/samime_r/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/samaidev/samime_r/main/install.sh | sudo bash
 ```
 
-安装完成后，在系统设置中添加 Samime 输入源即可。
+> **前置依赖**：Go 1.22+ 和 IBus 1.5+。Ubuntu/Debian 可用 `sudo apt install -y golang-go ibus` 安装。
+> 脚本会自动 clone samime 源码到 `/tmp/samime-src`，编译后安装到 `/usr/bin/samime`，注册 IBus 组件并切换引擎。
+> 安装后按 **Super+Space** 切换到 Samime 即可输入中文。
+
+或者从已 clone 的源码目录运行：
+
+```bash
+git clone https://github.com/samaidev/samime.git
+cd samime
+sudo ./install.sh
+```
 
 ### macOS
 
