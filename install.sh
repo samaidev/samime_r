@@ -1,40 +1,21 @@
 #!/bin/bash
 # install.sh — Samime 一键安装/升级脚本（Linux，IBus 模式）
 #
-# 作用：
-#   1. 编译（或复制预编译二进制）Samime Go 引擎
-#   2. 停掉旧 samime 进程（避免覆盖时“文本文件忙”）
+# 用法：
+#   curl -fsSL https://raw.githubusercontent.com/samaidev/samime_r/main/install.sh | sudo bash
+#   # 或者从源码目录运行：
+#   sudo ./install.sh
+#
+# 脚本会：
+#   1. 如果当前目录没有 samime 源码，自动 git clone 到 /tmp/samime-src
+#   2. 编译 Go 引擎（需要 go 1.22+）
 #   3. 安装二进制 + IBus 包装脚本 + IBus 组件 XML
 #   4. 注册输入源、重启 IBus 并切换引擎
-#   5. 等待引擎加载完成后验证（新版词典加载约 18s，故需等待）
-#
-# 用法：
-#   ./install.sh                 # 从仓库源码编译并安装
-#   BIN=/path/to/samime ./install.sh   # 使用指定的预编译二进制
-#   ./install.sh --no-build      # 跳过编译（配合 BIN= 使用）
-#
-# 踩坑固化（来自真实调试经验）：
-#   * IBus 组件 XML 的 <exec> 必须含 --ibus，否则引擎不进 D-Bus 模式、打不出中文
-#   * <language> 用 zho（不是 zh_CN）
-#   * 覆盖运行中二进制会“文本文件忙”，必须先 pkill
-#   * 新版本词典加载慢（~18s），切换引擎前必须等待，否则超时返回 xkb:us::eng
-#   * 已废弃 Python 桥接（IBus 1.5 GI 绑定下 Factory 注册死锁）
 
 set -euo pipefail
 
-BIN="${BIN:-}"
-NO_BUILD=0
-for a in "$@"; do
-  case "$a" in
-    --no-build) NO_BUILD=1 ;;
-    -h|--help) sed -n '2,30p' "$0"; exit 0 ;;
-  esac
-done
-
-ROOT="$(cd "$(dirname "$0")" && pwd)"
+REPO_URL="https://github.com/samaidev/samime.git"
 INSTALL_BIN="/usr/bin/samime"
-# 与 .deb/.rpm 保持一致：包装脚本放 /usr/lib/samime/，
-# 不用 /usr/local（Debian Policy 9.1.2 保留给本地管理员）
 WRAPPER_DIR="/usr/lib/samime"
 WRAPPER="$WRAPPER_DIR/samime-ibus.sh"
 OLD_WRAPPER="/usr/local/bin/samime-ibus.sh"
@@ -42,50 +23,65 @@ IBUS_COMP_DIR="/usr/share/ibus/component"
 IBUS_XML="$IBUS_COMP_DIR/samime.xml"
 LOG="/tmp/samime-ibus.log"
 
+# Determine ROOT: if running from a samime source checkout (has cmd/ dir), use CWD.
+# Otherwise (e.g. curl|bash), clone to /tmp/samime-src.
+SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+if [ -f "$SCRIPT_DIR/cmd/ime-cli/main.go" ] && [ -f "$SCRIPT_DIR/go.mod" ]; then
+  ROOT="$SCRIPT_DIR"
+else
+  # curl|bash mode: clone source
+  ROOT="/tmp/samime-src"
+  if [ ! -d "$ROOT/.git" ]; then
+    echo "[*] 当前目录无 samime 源码，clone 到 $ROOT ..."
+    rm -rf "$ROOT"
+    git clone --depth=1 "$REPO_URL" "$ROOT"
+  else
+    echo "[*] 更新已有源码 $ROOT ..."
+    (cd "$ROOT" && git pull --ff-only 2>/dev/null || true)
+  fi
+fi
+
 echo "=================================================="
 echo " Samime 一键安装/升级"
+echo " 源码目录: $ROOT"
 echo "=================================================="
 
 # ---------- 0. 权限检查 ----------
 if [ "$(id -u)" -ne 0 ]; then
-  echo "[!] 请使用 sudo 运行：sudo $0"
+  echo "[!] 请使用 sudo 运行：sudo bash install.sh"
+  echo "    或：curl -fsSL https://raw.githubusercontent.com/samaidev/samime_r/main/install.sh | sudo bash"
   exit 1
 fi
 
-# ---------- 1. 准备二进制 ----------
-if [ "$NO_BUILD" -eq 0 ]; then
-  if [ -z "$BIN" ]; then
-    echo "[1/6] 编译 Samime 引擎..."
-    if ! command -v go >/dev/null 2>&1; then
-      echo "[!] 未找到 go，请先安装 Go 1.22+"
-      exit 1
-    fi
-    BIN="$ROOT/_build/samime"
-    mkdir -p "$ROOT/_build"
-    go build -o "$BIN" ./cmd/ime-cli
-    echo "[OK] 已编译: $BIN"
-  fi
-else
-  if [ -z "$BIN" ]; then
-    echo "[!] --no-build 需要配合 BIN=/path/to/samime"
-    exit 1
-  fi
+# ---------- 1. 检查 Go 工具链 ----------
+if ! command -v go >/dev/null 2>&1; then
+  echo "[!] 未找到 go。请先安装 Go 1.22+："
+  echo "    sudo apt install -y golang-go    # Ubuntu/Debian"
+  echo "    # 或从 https://go.dev/dl/ 下载"
+  exit 1
 fi
+GO_VERSION="$(go version 2>/dev/null | awk '{print $3}')"
+echo "[*] Go: $GO_VERSION"
 
+# ---------- 2. 编译 ----------
+echo "[1/6] 编译 Samime 引擎..."
+BIN="$ROOT/_build/samime"
+mkdir -p "$ROOT/_build"
+( cd "$ROOT" && go build -o "$BIN" ./cmd/ime-cli )
 if [ ! -x "$BIN" ]; then
-  echo "[!] 二进制不可用: $BIN"
+  echo "[!] 编译失败"
   exit 1
 fi
+echo "[OK] 已编译: $BIN"
 
-# ---------- 2. 停掉旧进程（关键：避免文本文件忙） ----------
+# ---------- 3. 停掉旧进程（避免文本文件忙） ----------
 echo "[2/6] 停止旧 samime 进程..."
 pkill -x samime 2>/dev/null || true
-# 兜底：精确匹配常见路径
 for p in $(pgrep -f "/usr/bin/samime" 2>/dev/null); do kill "$p" 2>/dev/null || true; done
 for p in $(pgrep -f "samime -mode=service" 2>/dev/null); do kill "$p" 2>/dev/null || true; done
 sleep 2
 
-# ---------- 3. 安装二进制 + 包装脚本 ----------
+# ---------- 4. 安装二进制 + 包装脚本 ----------
 echo "[3/6] 安装二进制与包装脚本..."
 install -m 755 "$BIN" "$INSTALL_BIN"
 
@@ -97,10 +93,10 @@ exec /usr/bin/samime -mode=service --ibus >"$SAMIME_IBUS_LOG" 2>&1
 IBUS_SH
 chmod 755 "$WRAPPER"
 
-# 清理旧版本残留在 /usr/local/bin 的脚本，避免两份并存
+# 清理旧版本残留在 /usr/local/bin 的脚本
 rm -f "$OLD_WRAPPER"
 
-# ---------- 4. IBus 组件 XML ----------
+# ---------- 5. IBus 组件 XML ----------
 echo "[4/6] 写入 IBus 组件配置..."
 mkdir -p "$IBUS_COMP_DIR"
 cat > "$IBUS_XML" <<'XML'
@@ -109,7 +105,7 @@ cat > "$IBUS_XML" <<'XML'
     <name>org.freedesktop.IBus.Samime</name>
     <description>Samime Chinese Input Method (Go)</description>
     <exec>/usr/lib/samime/samime-ibus.sh</exec>
-    <version>1.0.0</version>
+    <version>2.0.2</version>
     <author>samime</author>
     <license>MIT</license>
     <homepage>https://github.com/samaidev/samime</homepage>
@@ -131,10 +127,8 @@ XML
 # 刷新 IBus 缓存
 ibus write-cache --system 2>/dev/null || true
 
-# ---------- 5. 注册输入源并重启 IBus ----------
+# ---------- 6. 注册输入源并重启 IBus ----------
 echo "[5/6] 注册输入源、重启 IBus..."
-# 找到当前登录用户（用于设置用户级 gsettings / 重启 IBus）
-# 注意：不要用 logname（在 sudo 下可能挂起）；优先 $SUDO_USER，其次 who。
 REAL_USER="${SUDO_USER:-}"
 if [ -z "$REAL_USER" ]; then
   REAL_USER="$(who 2>/dev/null | awk '{print $1}' | grep -v root | head -1)"
@@ -144,8 +138,6 @@ INTERACTIVE=0
 [ -t 1 ] && INTERACTIVE=1
 
 if [ "$INTERACTIVE" -eq 1 ]; then
-  # 交互环境：尝试 best-effort 自动激活（ibus 依赖桌面会话 DBUS，
-  # 在 sudo/root 上下文里 runuser 调用会挂起，故仅 best-effort 并提示手动）。
   if [ -n "$REAL_USER" ]; then
     UID_="$(id -u "$REAL_USER" 2>/dev/null)"
     XDG="/run/user/$UID_"
@@ -157,8 +149,6 @@ if [ "$INTERACTIVE" -eq 1 ]; then
   fi
 
   echo "      正在尝试重启并切换 IBus 引擎（best-effort）..."
-  # 注意：ibus restart 在 runuser 子进程内会卡住，故用 nohup 脱离，
-  # 若失败不影响安装结果，末尾会提示手动激活。
   if [ -n "$REAL_USER" ] && [ -n "${XDG:-}" ]; then
     timeout 30 runuser -u "$REAL_USER" -- bash -c \
       "nohup ibus restart </dev/null >/dev/null 2>&1 &" 2>/dev/null || true
