@@ -21,6 +21,7 @@ Samime 是 SamAI Group 开发的免费中文拼音输入法，采用 Go 语言�
 | 🗣️ 模糊音 | z/zh、s/sh、c/ch、n/l 等常见模糊音 |
 | ⚡ 极速响应 | 搜狗式全二分词典索引，常规按键 0-8ms |
 | 🪶 低占用 | mmap 零拷贝词库加载，常驻内存约 140MB |
+| 🏆 搜狗式选词 | 搜狗官方词库热度 + 全网语料真实词频 + 现代汉语字频三源融合，候选排序对标搜狗（v3.3） |
 | 🎨 精美候选窗 | Windows 端 Direct2D 硬件加速渲染，支持翻页 |
 | 🔤 中英切换 | 单击 Shift 即时切换，已敲字母保留上屏 |
 | 🈶 中文标点 | 直接输入 `，。？！；：""''【】《》` 等中文标点 |
@@ -84,9 +85,9 @@ ibus restart && sleep 18 && ibus engine samime
 
 | 版本 | 发布日期 | 下载 | 说明 |
 |------|----------|------|------|
-| v3.2.2 | 2026-10-14 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.2.2/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.2.2/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.2.2/SamIME-linux-x64.tar.gz) | 最新版本 |
+| v3.3.0 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.3.0/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.3.0/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.3.0/SamIME-linux-x64.tar.gz) | 最新版本（搜狗词库+真实词频体系） |
+| v3.2.2 | 2026-10-14 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.2.2/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.2.2/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.2.2/SamIME-linux-x64.tar.gz) | 整句转换修复 + 圆角候选窗 |
 | v3.2.1 | 2026-10-14 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.2.1/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.2.1/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.2.1/SamIME-linux-x64.tar.gz) | 中文标点补齐 |
-| v3.2.0 | 2026-10-14 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.2.0/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.2.0/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.2.0/SamIME-linux-x64.tar.gz) | Windows 安装向导 + Linux 一键安装包 |
 | v3.1.1 | 2026-10-14 | [samime-setup-3.1.1.exe](https://github.com/samaidev/samime_r/releases/download/v3.1.1/samime-setup-3.1.1.exe) | 正式 Windows 安装程序（NSIS） |
 
 > 本发布仓仅保留最近 3 个版本，更早版本已归档清理。
