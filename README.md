@@ -49,17 +49,23 @@ Samime 是 SamAI Group 开发的免费中文拼音输入法，采用 Go 语言�
 
 ### Linux / Ubuntu（x64）
 
-一键安装（Ubuntu 20.04+ 及其他 IBus 桌面发行版），复制以下命令到终端执行：
+一键安装（Ubuntu 20.04+ 及其他 IBus 桌面发行版），复制以下一行命令到终端执行：
+
+```bash
+curl -fsSL https://github.com/samaidev/samime_r/releases/latest/download/install.sh | sudo bash
+```
+
+脚本自动完成：下载最新版引擎（内嵌词库）→ 安装到 `/usr/bin/samime` → 注册 IBus 组件 → 加入输入源列表并激活。桌面会话内安装完成后即自动切换；若提示需手动激活（如 SSH/非图形环境），执行：
+
+```bash
+ibus restart && sleep 18 && ibus engine samime
+```
+
+手动安装（备用）：
 
 ```bash
 curl -fsSL https://github.com/samaidev/samime_r/releases/latest/download/SamIME-linux-x64.tar.gz | sudo tar -xz -C /opt
 sudo BIN=/opt/samime/samime bash /opt/samime/install.sh --no-build
-```
-
-脚本自动完成：安装引擎到 `/usr/bin/samime`、注册 IBus 组件、加入输入源列表并激活。桌面会话内安装完成后即自动切换；若提示需手动激活（如 SSH/非图形环境），执行：
-
-```bash
-ibus restart && sleep 18 && ibus engine samime
 ```
 
 - 切换输入法：**Super + Space**
