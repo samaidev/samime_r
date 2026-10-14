@@ -85,7 +85,8 @@ ibus restart && sleep 18 && ibus engine samime
 
 | 版本 | 发布日期 | 下载 | 说明 |
 |------|----------|------|------|
-| v3.3.0 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.3.0/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.3.0/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.3.0/SamIME-linux-x64.tar.gz) | 最新版本（搜狗词库+真实词频体系） |
+| v3.3.1 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.3.1/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.3.1/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.3.1/SamIME-linux-x64.tar.gz) | 最新版本：零输入词语联想 + 首键闪烁根治 + 容错增强 |
+| v3.3.0 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.3.0/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.3.0/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.3.0/SamIME-linux-x64.tar.gz) | 搜狗官方词库 + 真实词频体系 |（搜狗词库+真实词频体系） |
 | v3.2.2 | 2026-10-14 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.2.2/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.2.2/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.2.2/SamIME-linux-x64.tar.gz) | 整句转换修复 + 圆角候选窗 |
 | v3.2.1 | 2026-10-14 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.2.1/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.2.1/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.2.1/SamIME-linux-x64.tar.gz) | 中文标点补齐 |
 | v3.1.1 | 2026-10-14 | [samime-setup-3.1.1.exe](https://github.com/samaidev/samime_r/releases/download/v3.1.1/samime-setup-3.1.1.exe) | 正式 Windows 安装程序（NSIS） |
