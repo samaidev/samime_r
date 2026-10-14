@@ -40,14 +40,30 @@ Samime 是 [SamAI Group](https://samai.cc) 开发的跨平台中文拼音输入�
 
 ## 下载安装
 
-### Windows
+### Windows（推荐：标准安装程序）
 
-1. 下载最新版安装包：[SamIME-v3.1.0-windows-x64.zip](https://github.com/samaidev/samime_r/releases/download/v3.1.0/SamIME-v3.1.0-windows-x64.zip)
+1. 下载安装包：[samime-setup-3.1.1.exe](https://github.com/samaidev/samime_r/releases/download/v3.1.1/samime-setup-3.1.1.exe)
    - 或访问 [Releases 页面](https://github.com/samaidev/samime_r/releases) 获取所有版本
-2. 解压后，右键 `install.bat` → **以管理员身份运行**
+2. 双击运行，按向导完成安装（自动注册 TSF、加入语言列表、创建开机自启与固化注册计划任务）
 3. 安装完成后，按 **Win + Space** 切换到 Samime 即可使用
 
-卸载：解压目录中右键 `uninstall.bat` → 以管理员身份运行。
+卸载：Windows「设置 → 应用 → 安装的应用」中卸载，或运行安装目录下的 `uninstall.exe`。
+
+> 静默安装（无人值守）：`samime-setup-3.1.1.exe /S`
+>
+> 便携版（解压即用，v3.1.0）：[SamIME-v3.1.0-windows-x64.zip](https://github.com/samaidev/samime_r/releases/download/v3.1.0/SamIME-v3.1.0-windows-x64.zip)，解压后右键 `install.bat` 以管理员身份运行。
+
+### v3.1.1 更新亮点：正式 Windows 安装程序
+
+自 v3.1.1 起提供标准 NSIS 安装向导，一键完成全部安装：
+
+- 简体中文安装界面，支持自定义安装目录与桌面快捷方式
+- 全自动注册：regsvr32 + 独立注册工具，输入法安装后即被「添加并默认启用」
+- 自动创建 `SamimeService`（登录自启引擎）与 `SamimeRegister`（开机固化重注册）计划任务，根治「重启后输入法消失」
+- 完整卸载器：控制面板可卸载，注册表 / 语言列表 / 计划任务全量清理
+- 支持 `/S` 静默安装，方便批量部署
+
+引擎内核与 v3.1.0 相同（搜狗式全二分索引：长句 0ms、纠错有界 60ms、内存 ~140MB）。
 
 ### v3.1.0 更新亮点：搜狗式全二分索引，彻底消除打字卡顿
 
