@@ -1,124 +1,63 @@
 #!/bin/bash
-# install.sh — Samime 一键安装/升级脚本（Linux，IBus 模式，用户级安装）
+# install.sh — SamIME Linux 一键自举安装脚本
 #
-# 用法：
-#   curl -fsSL https://raw.githubusercontent.com/samaidev/samime_r/main/install.sh | bash
+# 用法（复制到终端执行即可）：
+#   curl -fsSL https://github.com/samaidev/samime_r/releases/latest/download/install.sh | sudo bash
 #
-# 特点：
-#   - 无需 sudo（安装到 ~/.local/bin 和 ~/.local/share）
-#   - 无需 Go 工具链（下载预编译二进制）
-#   - 无需 clone 源码
-#
-# 前置依赖：IBus 1.5+（Ubuntu/Debian: sudo apt install -y ibus）
+# 行为：自动下载最新 SamIME-linux-x64.tar.gz（含 samime 引擎 + IBus 安装脚本），
+#       解压到 /opt/samime，随后以预编译二进制模式完成 IBus 注册与激活。
 
 set -euo pipefail
 
-VERSION="2.0.2"
-BINARY_URL="https://github.com/samaidev/samime_r/releases/download/v${VERSION}/samime-linux-amd64"
-LOG="/tmp/samime-ibus.log"
-TMP_BIN="/tmp/samime-linux-amd64-$$"
+REPO="samaidev/samime_r"
+BASE_URL="https://github.com/${REPO}/releases/latest/download"
+TARBALL="SamIME-linux-x64.tar.gz"
+DEST="/opt/samime"
 
-# 用户级安装目录
-LOCAL_BIN_DIR="$HOME/.local/bin"
-LOCAL_SHARE_DIR="$HOME/.local/share/samime"
-INSTALL_BIN="$LOCAL_BIN_DIR/samime"
-WRAPPER="$LOCAL_SHARE_DIR/samime-ibus.sh"
-IBUS_COMP_DIR="$HOME/.local/share/ibus/component"
-IBUS_XML="$IBUS_COMP_DIR/samime.xml"
+log()  { echo -e "[SamIME] $*"; }
+fail() { echo -e "[SamIME][错误] $*" >&2; exit 1; }
 
-echo "=================================================="
-echo " Samime ${VERSION} 一键安装（Linux/IBus，用户级）"
-echo "=================================================="
+# ---------- 0. 前置检查 ----------
+[ "$(id -u)" -eq 0 ] || fail "请用 root 运行：curl -fsSL <url>/install.sh | sudo bash"
 
-# ---------- 1. 检查 IBus ----------
-if ! command -v ibus >/dev/null 2>&1; then
-  echo "[!] 未找到 ibus。请先安装："
-  echo "    sudo apt install -y ibus    # Ubuntu/Debian"
-  exit 1
+ARCH="$(uname -m)"
+[ "$ARCH" = "x86_64" ] || fail "仅支持 x86_64，当前架构: $ARCH（arm64 请从源码编译 samime）"
+
+if command -v curl >/dev/null 2>&1; then
+  FETCH="curl -fsSL --retry 3 -o"
+elif command -v wget >/dev/null 2>&1; then
+  FETCH="wget -q --tries=3 -O"
+else
+  fail "系统缺少 curl 或 wget，请先安装：apt-get install -y curl"
 fi
 
-# ---------- 2. 下载预编译二进制 ----------
-echo "[1/5] 下载 samime-linux-amd64 ..."
-if ! curl -fSL --retry 3 -o "$TMP_BIN" "$BINARY_URL"; then
-  echo "[!] 下载失败。请检查网络或手动下载："
-  echo "    $BINARY_URL"
-  exit 1
-fi
-chmod +x "$TMP_BIN"
-DOWNLOADED_SIZE=$(stat -c%s "$TMP_BIN" 2>/dev/null || stat -f%z "$TMP_BIN")
-echo "[OK] 已下载 ${DOWNLOADED_SIZE} 字节"
+TMP="$(mktemp -d /tmp/samime-install.XXXXXX)"
+trap 'rm -rf "$TMP"' EXIT
 
-# ---------- 3. 停掉旧进程 ----------
-echo "[2/5] 停止旧 samime 进程..."
-pkill -x samime 2>/dev/null || true
-for p in $(pgrep -f "samime -mode=service" 2>/dev/null); do kill "$p" 2>/dev/null || true; done
-sleep 2
+# ---------- 1. 下载最新版 ----------
+log "下载最新版 $TARBALL ..."
+$FETCH "$TMP/$TARBALL" "$BASE_URL/$TARBALL" \
+  || fail "下载失败，请检查网络后重试（$BASE_URL/$TARBALL）"
+[ -s "$TMP/$TARBALL" ] || fail "下载的文件为空"
 
-# ---------- 4. 安装二进制 + 包装脚本 ----------
-echo "[3/5] 安装二进制与包装脚本..."
-mkdir -p "$LOCAL_BIN_DIR" "$LOCAL_SHARE_DIR"
-mv -f "$TMP_BIN" "$INSTALL_BIN"
-chmod 755 "$INSTALL_BIN"
+# ---------- 2. 解压 ----------
+log "解压 ..."
+tar -xzf "$TMP/$TARBALL" -C "$TMP" || fail "解压失败（文件损坏？）"
+[ -x "$TMP/samime/samime" ] || fail "压缩包内容异常：缺少 samime 引擎"
 
-cat > "$WRAPPER" <<'IBUS_SH'
-#!/bin/bash
-export SAMIME_IBUS_LOG=/tmp/samime-ibus.log
-exec BINDIR/samime -mode=service --ibus >"$SAMIME_IBUS_LOG" 2>&1
-IBUS_SH
-# Replace BINDIR placeholder with actual path
-sed -i "s|BINDIR|$LOCAL_BIN_DIR|g" "$WRAPPER"
-chmod 755 "$WRAPPER"
+# ---------- 3. 安装到 /opt/samime ----------
+log "放置文件到 $DEST ..."
+mkdir -p "$DEST"
+install -m 755 "$TMP/samime/samime" "$DEST/samime"
+install -m 644 "$TMP/samime/install.sh" "$DEST/install.sh" 2>/dev/null || cp -f "$TMP/samime/install.sh" "$DEST/install.sh"
+[ -f "$TMP/samime/INSTALL.txt" ] && install -m 644 "$TMP/samime/INSTALL.txt" "$DEST/INSTALL.txt" 2>/dev/null || true
 
-# ---------- 5. IBus 组件 XML（用户级） ----------
-echo "[4/5] 写入 IBus 组件配置..."
-mkdir -p "$IBUS_COMP_DIR"
-cat > "$IBUS_XML" <<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<component>
-    <name>org.freedesktop.IBus.Samime</name>
-    <description>Samime Chinese Input Method (Go)</description>
-    <exec>$WRAPPER</exec>
-    <version>2.0.2</version>
-    <author>samime</author>
-    <license>MIT</license>
-    <homepage>https://github.com/samaidev/samime</homepage>
-    <engines>
-        <engine>
-            <name>samime</name>
-            <longname>Samime Pinyin</longname>
-            <description>Samime Chinese Input Method (Go)</description>
-            <language>zho</language>
-            <license>MIT</license>
-            <author>samime</author>
-            <icon>samime</icon>
-            <layout>us</layout>
-        </engine>
-    </engines>
-</component>
-XML
+# ---------- 4. 调用 IBus 安装脚本（预编译二进制模式） ----------
+log "执行 IBus 安装与注册 ..."
+BIN="$DEST/samime" bash "$DEST/install.sh" --no-build </dev/null || true
+# 注：install.sh 自带 root 检查 / 旧进程清理 / IBus 组件写入 / 输入源注册 / 引擎激活。
 
-# 刷新 IBus 缓存（用户级）
-ibus write-cache 2>/dev/null || true
-
-# ---------- 6. 提示激活 ----------
-echo "[5/5] 安装完成。"
-echo ""
-echo "============================================"
-echo "  文件已全部安装到位："
-echo "    二进制:  $INSTALL_BIN"
-echo "    包装器:  $WRAPPER"
-echo "    IBus:    $IBUS_XML"
-echo "============================================"
-echo ""
-echo "  现在执行以下命令激活引擎（无需 sudo）："
-echo ""
-echo "    ibus restart"
-echo "    sleep 18    # 等待词典加载（约 5-18 秒）"
-echo "    ibus engine samime"
-echo ""
-echo "  验证: ibus engine   (应显示 samime)"
-echo "  切换: Super+Space"
-echo "  日志: $LOG"
-echo ""
-echo "  如果 ibus engine samime 报错 'No engine'，等 5 秒后重试"
-echo "  （引擎注册需要时间，首次启动词典加载约 5-18 秒）"
+log "完成。引擎与安装脚本位于 $DEST/"
+log "如输入法未自动激活，请在你的用户终端执行："
+log "  ibus restart && sleep 18 && ibus engine samime"
+log "然后按 Super+Space 切换到 SamIME 即可输入中文。"
