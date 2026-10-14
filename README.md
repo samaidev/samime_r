@@ -34,6 +34,7 @@ Samime 是 [SamAI Group](https://samai.cc) 开发的跨平台中文拼音输入�
 | 候选翻页 | 候选词超过 5 个时支持翻页，上下箭头选择 |
 | 用户词典 | 自动学习用户选词，最近使用的词优先排序 |
 | 超低内存 | 搜狗式紧凑词库 + 内存映射，常驻 ~140MB（v3.0） |
+| 零卡顿查找 | 全二分词典索引 + 60ms 有界纠错，长句输入 0-8ms 响应（v3.1） |
 
 ---
 
@@ -41,12 +42,27 @@ Samime 是 [SamAI Group](https://samai.cc) 开发的跨平台中文拼音输入�
 
 ### Windows
 
-1. 下载最新版安装包：[SamIME-v3.0.0-windows-x64.zip](https://github.com/samaidev/samime_r/releases/download/v3.0.0/SamIME-v3.0.0-windows-x64.zip)
+1. 下载最新版安装包：[SamIME-v3.1.0-windows-x64.zip](https://github.com/samaidev/samime_r/releases/download/v3.1.0/SamIME-v3.1.0-windows-x64.zip)
    - 或访问 [Releases 页面](https://github.com/samaidev/samime_r/releases) 获取所有版本
 2. 解压后，右键 `install.bat` → **以管理员身份运行**
 3. 安装完成后，按 **Win + Space** 切换到 Samime 即可使用
 
 卸载：解压目录中右键 `uninstall.bat` → 以管理员身份运行。
+
+### v3.1.0 更新亮点：搜狗式全二分索引，彻底消除打字卡顿
+
+针对 v3.0 部分长句输入卡顿（如“天气不错”可达 0.7 秒）的深度优化：
+
+| 指标 | v3.0 | v3.1 |
+|------|------|------|
+| 长句查找最坏延迟 | 542-904 ms | **0 ms**（精确命中路径） |
+| 常规查询延迟 | 1-30 ms | **0-8 ms** |
+| 错字容错延迟 | 144 ms 无上界 | **≤60 ms 有界保证** |
+| 内存占用 | ~140 MB | ~140 MB（不变） |
+
+技术要点（对齐搜狗全二分设计）：2-gram 语言模型组内改按词字节序重排，
+查找从线性扫描降为 O(log k) 二分；切分引擎只解码候选头部条目；
+纠错路径增加搜狗式门控与时间预算——精确命中零开销，错字容错最多 60ms。
 
 ### v3.0.0 更新亮点：搜狗式词库架构，内存降低 87%
 
