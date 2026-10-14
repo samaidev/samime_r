@@ -33,6 +33,7 @@ Samime 是 [SamAI Group](https://samai.cc) 开发的跨平台中文拼音输入�
 | 中文标点 | ；：、""''【】《》——～ 等 14 种标点 |
 | 候选翻页 | 候选词超过 5 个时支持翻页，上下箭头选择 |
 | 用户词典 | 自动学习用户选词，最近使用的词优先排序 |
+| 超低内存 | 搜狗式紧凑词库 + 内存映射，常驻 ~140MB（v3.0） |
 
 ---
 
@@ -40,10 +41,26 @@ Samime 是 [SamAI Group](https://samai.cc) 开发的跨平台中文拼音输入�
 
 ### Windows
 
-1. 下载最新版安装包：[samime-setup-2.0.2.exe](https://github.com/samaidev/samime_r/releases/download/v2.0.2/samime-setup-2.0.2.exe)
+1. 下载最新版安装包：[SamIME-v3.0.0-windows-x64.zip](https://github.com/samaidev/samime_r/releases/download/v3.0.0/SamIME-v3.0.0-windows-x64.zip)
    - 或访问 [Releases 页面](https://github.com/samaidev/samime_r/releases) 获取所有版本
-2. **以管理员身份运行**安装包
+2. 解压后，右键 `install.bat` → **以管理员身份运行**
 3. 安装完成后，按 **Win + Space** 切换到 Samime 即可使用
+
+卸载：解压目录中右键 `uninstall.bat` → 以管理员身份运行。
+
+### v3.0.0 更新亮点：搜狗式词库架构，内存降低 87%
+
+| 指标 | v2.0 | v3.0 |
+|------|------|------|
+| 引擎常驻内存 | ~1.1 GB | **~140 MB** |
+| 启动到可输入 | 数秒 | **即开即用** |
+| 词库规模 | 101 万词条 | 101 万词条（不变） |
+| 程序体积 | 78 MB | **69.5 MB** |
+
+v3.0 对词库存储做了架构级重构（对齐搜狗输入法的紧凑二进制 + 内存映射方案）：
+词库以自研 SIDB 格式离线打包，运行时通过 `MapViewOfFile` 只读映射、按需解码，
+不物化任何对象；2-gram 语言模型同样二进制化（对标搜狗 `sgim_gd_bigram.bin`）。
+输入法不再"吃内存"，老电脑也能流畅运行。
 
 ### Linux（IBus）
 
