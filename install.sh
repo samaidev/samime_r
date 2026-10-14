@@ -43,7 +43,10 @@ $FETCH "$TMP/$TARBALL" "$BASE_URL/$TARBALL" \
 # ---------- 2. 解压 ----------
 log "解压 ..."
 tar -xzf "$TMP/$TARBALL" -C "$TMP" || fail "解压失败（文件损坏？）"
-[ -x "$TMP/samime/samime" ] || fail "压缩包内容异常：缺少 samime 引擎"
+# 注：tar 包由 Windows 侧打出，可能不带执行位（MBA 实测踩坑）——
+# 统一补 chmod，再用 -f 校验文件存在即可
+chmod 755 "$TMP/samime/samime" 2>/dev/null || true
+[ -f "$TMP/samime/samime" ] || fail "压缩包内容异常：缺少 samime 引擎"
 
 # ---------- 3. 安装到 /opt/samime ----------
 log "放置文件到 $DEST ..."
