@@ -49,28 +49,22 @@ Samime 是 SamAI Group 开发的免费中文拼音输入法，采用 Go 语言�
 
 ### Linux / Ubuntu（x64）
 
-一键安装（Ubuntu 20.04+ 及其他 IBus 桌面发行版），复制以下一行命令到终端执行：
+1. 下载 **一键安装包** [SamIME-linux-x64.tar.gz](https://github.com/samaidev/samime_r/releases/latest/download/SamIME-linux-x64.tar.gz)（内含 samime 引擎 + install.sh 安装脚本）
+2. 解压后在所在目录执行：
 
 ```bash
-curl -fsSL https://github.com/samaidev/samime_r/releases/latest/download/install.sh | sudo bash
+sudo BIN=$(pwd)/samime bash install.sh --no-build
 ```
 
-脚本自动完成：下载最新版引擎（内嵌词库）→ 安装到 `/usr/bin/samime` → 注册 IBus 组件 → 加入输入源列表并激活。桌面会话内安装完成后即自动切换；若提示需手动激活（如 SSH/非图形环境），执行：
+3. 若提示需手动激活（SSH/非图形环境），执行：
 
 ```bash
 ibus restart && sleep 18 && ibus engine samime
 ```
 
-手动安装（备用）：
-
-```bash
-curl -fsSL https://github.com/samaidev/samime_r/releases/latest/download/SamIME-linux-x64.tar.gz | sudo tar -xz -C /opt
-sudo BIN=/opt/samime/samime bash /opt/samime/install.sh --no-build
-```
-
 - 切换输入法：**Super + Space**
 - 引擎日志：`/tmp/samime-ibus.log`
-- 升级：重新执行上述一键命令即可覆盖安装
+- 升级：下载新版本安装包覆盖执行即可
 - 卸载：`sudo pkill -x samime; sudo rm -f /usr/bin/samime /usr/local/bin/samime-ibus.sh /usr/share/ibus/component/samime.xml && ibus restart`
 
 ---
@@ -90,9 +84,9 @@ sudo BIN=/opt/samime/samime bash /opt/samime/install.sh --no-build
 
 | 版本 | 发布日期 | 下载 | 说明 |
 |------|----------|------|------|
+| v3.2.1 | 2026-10-14 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.2.1/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.2.1/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.2.1/SamIME-linux-x64.tar.gz) | 最新版本 |
 | v3.2.0 | 2026-10-14 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.2.0/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.2.0/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.2.0/SamIME-linux-x64.tar.gz) | Windows 安装向导 + Linux 一键安装包 |
 | v3.1.1 | 2026-10-14 | [samime-setup-3.1.1.exe](https://github.com/samaidev/samime_r/releases/download/v3.1.1/samime-setup-3.1.1.exe) | 正式 Windows 安装程序（NSIS） |
-| v3.1.0 | 2026-10-14 | [SamIME-v3.1.0-windows-x64.zip](https://github.com/samaidev/samime_r/releases/download/v3.1.0/SamIME-v3.1.0-windows-x64.zip) | 全二分索引引擎，Windows 便携版 |
 
 > 本发布仓仅保留最近 3 个版本，更早版本已归档清理。
 
