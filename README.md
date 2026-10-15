@@ -35,7 +35,8 @@ Samime 是 SamAI Group 开发的免费中文拼音输入法，采用 Go 语言�
 > 稳定下载链接（始终指向最新版本）：
 > [Windows 安装程序](https://github.com/samaidev/samime_r/releases/latest/download/SamIME-windows-x64-setup.exe) ·
 > [Windows 便携版](https://github.com/samaidev/samime_r/releases/latest/download/SamIME-windows-x64.zip) ·
-> [Linux 一键安装包](https://github.com/samaidev/samime_r/releases/latest/download/SamIME-linux-x64.tar.gz)
+> [Linux 一键安装包](https://github.com/samaidev/samime_r/releases/latest/download/SamIME-linux-x64.tar.gz) ·
+> [Linux 安装脚本](https://github.com/samaidev/samime_r/releases/latest/download/install.sh)
 
 ### Windows 10 / 11（x64）
 
@@ -46,6 +47,7 @@ Samime 是 SamAI Group 开发的免费中文拼音输入法，采用 Go 语言�
 安装器自动完成 TSF 输入法注册、语言列表添加、开机自启与注册固化，无需任何手动配置。
 
 - 静默安装（无人值守部署）：`SamIME-windows-x64-setup.exe /S`
+- 语音开关：任务栏托盘图标右键 → 「语音输入 / 关闭语音」（v3.4.1+，开启后前台自动持续听写）
 
 #### 离线语音输入（可选，v3.4+）
 
@@ -58,10 +60,19 @@ Samime 是 SamAI Group 开发的免费中文拼音输入法，采用 Go 语言�
 不装语音包完全不影响打字功能（按热键会提示「语音包未安装」）。识别**完全离线**，音频不经过任何服务器。
 
 - 便携版：下载 `SamIME-windows-x64.zip` 解压，右键以管理员身份运行 `install.bat`
-- 便携版：下载 `SamIME-windows-x64.zip` 解压，右键以管理员身份运行 `install.bat`
 - 卸载：Windows「设置 → 应用」中卸载，或运行安装目录下 `uninstall.exe`
 
 ### Linux / Ubuntu（x64）
+
+**方式一（推荐）：curl 一键安装**
+
+```bash
+curl -fsSL https://github.com/samaidev/samime_r/releases/latest/download/install.sh | sudo bash
+```
+
+脚本自动下载最新版 SamIME-linux-x64.tar.gz，安装到 /opt/samime 并完成 IBus 注册激活。
+
+**方式二：手动下载安装包**
 
 1. 下载 **一键安装包** [SamIME-linux-x64.tar.gz](https://github.com/samaidev/samime_r/releases/latest/download/SamIME-linux-x64.tar.gz)（内含 samime 引擎 + install.sh 安装脚本）
 2. 解压后在所在目录执行：
@@ -98,9 +109,9 @@ ibus restart && sleep 18 && ibus engine samime
 
 | 版本 | 发布日期 | 下载 | 说明 |
 |------|----------|------|------|
-| v3.4.0 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-linux-x64.tar.gz) · [语音包](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-voice-zh-1.0.zip) | 最新版本：离线语音输入 Ctrl+Shift+V |
-| v3.3.1 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.3.1/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.3.1/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.3.1/SamIME-linux-x64.tar.gz) | 最新版本：零输入词语联想 + 首键闪烁根治 + 容错增强 |
-| v3.3.0 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.3.0/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.3.0/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.3.0/SamIME-linux-x64.tar.gz) | 搜狗官方词库 + 真实词频体系 |（搜狗词库+真实词频体系） |
+| v3.4.1 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.4.1/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.4.1/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.4.1/SamIME-linux-x64.tar.gz) · [install.sh](https://github.com/samaidev/samime_r/releases/download/v3.4.1/install.sh) | 托盘语音开关 + 候选排序优化（nih→你好#1） |
+| v3.4.0 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-linux-x64.tar.gz) · [语音包](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-voice-zh-1.0.zip) | 离线语音输入 Ctrl+Shift+V |
+| v3.3.1 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.3.1/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.3.1/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.3.1/SamIME-linux-x64.tar.gz) | 零输入词语联想 + 首键闪烁根治 + 容错增强 |
 
 > 本发布仓仅保留最近 3 个版本，更早版本已归档清理。
 
