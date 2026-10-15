@@ -109,9 +109,9 @@ ibus restart && sleep 18 && ibus engine samime
 
 | 版本 | 发布日期 | 下载 | 说明 |
 |------|----------|------|------|
+| v3.4.2 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.4.2/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.4.2/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.4.2/SamIME-linux-x64.tar.gz) · [install.sh](https://github.com/samaidev/samime_r/releases/download/v3.4.2/install.sh) | 联想无限续链修复（空格结束联想） |
 | v3.4.1 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.4.1/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.4.1/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.4.1/SamIME-linux-x64.tar.gz) · [install.sh](https://github.com/samaidev/samime_r/releases/download/v3.4.1/install.sh) | 托盘语音开关 + 候选排序优化（nih→你好#1） |
 | v3.4.0 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-linux-x64.tar.gz) · [语音包](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-voice-zh-1.0.zip) | 离线语音输入 Ctrl+Shift+V |
-| v3.3.1 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.3.1/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.3.1/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.3.1/SamIME-linux-x64.tar.gz) | 零输入词语联想 + 首键闪烁根治 + 容错增强 |
 
 > 本发布仓仅保留最近 3 个版本，更早版本已归档清理。
 
