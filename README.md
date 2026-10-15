@@ -22,6 +22,7 @@ Samime 是 SamAI Group 开发的免费中文拼音输入法，采用 Go 语言�
 | ⚡ 极速响应 | 搜狗式全二分词典索引，常规按键 0-8ms |
 | 🪶 低占用 | mmap 零拷贝词库加载，常驻内存约 140MB |
 | 🏆 搜狗式选词 | 搜狗官方词库热度 + 全网语料真实词频 + 现代汉语字频三源融合，候选排序对标搜狗（v3.3） |
+| 🎙️ 离线语音输入 | `Ctrl+Shift+V` 说话即上屏（v3.4+），SenseVoice 离线模型，中/英混说、数字直出、自动标点，**录音不出本机** |
 | 🎨 精美候选窗 | Windows 端 Direct2D 硬件加速渲染，支持翻页 |
 | 🔤 中英切换 | 单击 Shift 即时切换，已敲字母保留上屏 |
 | 🈶 中文标点 | 直接输入 `，。？！；：""''【】《》` 等中文标点 |
@@ -45,6 +46,18 @@ Samime 是 SamAI Group 开发的免费中文拼音输入法，采用 Go 语言�
 安装器自动完成 TSF 输入法注册、语言列表添加、开机自启与注册固化，无需任何手动配置。
 
 - 静默安装（无人值守部署）：`SamIME-windows-x64-setup.exe /S`
+
+#### 离线语音输入（可选，v3.4+）
+
+安装器已内置语音识别运行库；语音模型（SenseVoice-small int8，约 227MB）按需安装：
+
+1. 下载 [SamIME-voice-zh-1.0.zip](https://github.com/samaidev/samime_r/releases/latest/download/SamIME-voice-zh-1.0.zip) 并解压
+2. 双击运行包内 `install_voice.bat`（安装到 `%LOCALAPPDATA%\SamIME\voice`）
+3. 中文模式下按 **Ctrl+Shift+V** 开始说话，停顿约 2 秒自动上屏；`Esc` 取消
+
+不装语音包完全不影响打字功能（按热键会提示「语音包未安装」）。识别**完全离线**，音频不经过任何服务器。
+
+- 便携版：下载 `SamIME-windows-x64.zip` 解压，右键以管理员身份运行 `install.bat`
 - 便携版：下载 `SamIME-windows-x64.zip` 解压，右键以管理员身份运行 `install.bat`
 - 卸载：Windows「设置 → 应用」中卸载，或运行安装目录下 `uninstall.exe`
 
@@ -85,11 +98,9 @@ ibus restart && sleep 18 && ibus engine samime
 
 | 版本 | 发布日期 | 下载 | 说明 |
 |------|----------|------|------|
+| v3.4.0 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-linux-x64.tar.gz) · [语音包](https://github.com/samaidev/samime_r/releases/download/v3.4.0/SamIME-voice-zh-1.0.zip) | 最新版本：离线语音输入 Ctrl+Shift+V |
 | v3.3.1 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.3.1/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.3.1/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.3.1/SamIME-linux-x64.tar.gz) | 最新版本：零输入词语联想 + 首键闪烁根治 + 容错增强 |
 | v3.3.0 | 2026-10-15 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.3.0/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.3.0/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.3.0/SamIME-linux-x64.tar.gz) | 搜狗官方词库 + 真实词频体系 |（搜狗词库+真实词频体系） |
-| v3.2.2 | 2026-10-14 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.2.2/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.2.2/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.2.2/SamIME-linux-x64.tar.gz) | 整句转换修复 + 圆角候选窗 |
-| v3.2.1 | 2026-10-14 | [安装程序](https://github.com/samaidev/samime_r/releases/download/v3.2.1/SamIME-windows-x64-setup.exe) · [便携版](https://github.com/samaidev/samime_r/releases/download/v3.2.1/SamIME-windows-x64.zip) · [Linux](https://github.com/samaidev/samime_r/releases/download/v3.2.1/SamIME-linux-x64.tar.gz) | 中文标点补齐 |
-| v3.1.1 | 2026-10-14 | [samime-setup-3.1.1.exe](https://github.com/samaidev/samime_r/releases/download/v3.1.1/samime-setup-3.1.1.exe) | 正式 Windows 安装程序（NSIS） |
 
 > 本发布仓仅保留最近 3 个版本，更早版本已归档清理。
 
