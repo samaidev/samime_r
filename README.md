@@ -105,9 +105,9 @@ sudo ./install.sh
 
 | 版本 | 发布日期 | 说明 |
 |------|----------|------|
+| [v3.4.8](https://github.com/samaidev/samime_r/releases/tag/v3.4.8) | 2026-10-16 | 联想功能整体移除（上屏后不再弹出联想候选）+ 模糊音默认关闭：修复 `naozhong` 首选「老总」的问题，精确拼音优先命中 |
 | [v3.4.7](https://github.com/samaidev/samime_r/releases/tag/v3.4.7) | 2026-10-15 | 翻页后数字选词错页修复 + 联想状态机重构（严格搜狗语义：空格即结束、数字一轮联想、联想不续链） |
 | [v3.4.6](https://github.com/samaidev/samime_r/releases/tag/v3.4.6) | 2026-10-15 | 性能修复：打字卡顿（剔除调试日志 IO + 候选窗每键单次重绘）+ 空格后候选栏复活问题修复 |
-| [v3.4.5](https://github.com/samaidev/samime_r/releases/tag/v3.4.5) | 2026-10-15 | 稳定性修复：乱输入不再卡死（搜索全局预算）+ 候选栏右下角闪现修复 |
 
 > 本发布仓仅保留最近 3 个版本，更早版本已归档清理。
 
