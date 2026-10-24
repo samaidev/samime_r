@@ -108,7 +108,6 @@ sudo ./install.sh
 | [v3.4.10](https://github.com/samaidev/samime_r/releases/tag/v3.4.10) | 2026-10-24 | 单字母一级简码强制排序：`l` → 「了」压倒性第一、「来」第二（不受用户词频/最近使用影响）；同步修复 s→是、d→的、n→你 等固定首选自引入以来未生效的问题 |
 | [v3.4.9](https://github.com/samaidev/samime_r/releases/tag/v3.4.9) | 2026-10-16 | 联想功能彻底删除（代码级移除，任何上屏后不再出现联想候选）+ 模糊音默认关闭（精确拼音优先） |
 | [v3.4.8](https://github.com/samaidev/samime_r/releases/tag/v3.4.8) | 2026-10-16 | 联想功能整体移除（上屏后不再弹出联想候选）+ 模糊音默认关闭：修复 `naozhong` 首选「老总」的问题，精确拼音优先命中 |
-| [v3.4.7](https://github.com/samaidev/samime_r/releases/tag/v3.4.7) | 2026-10-15 | 翻页后数字选词错页修复 + 联想状态机重构（严格搜狗语义：空格即结束、数字一轮联想、联想不续链） |
 
 > 本发布仓仅保留最近 3 个版本，更早版本已归档清理。
 
