@@ -51,6 +51,7 @@ jobs:
           Get-ChildItem stage | Select-Object Name, Length
 
       - name: Locate Inno Setup (ISCC)
+        id: iscc
         shell: pwsh
         run: |
           $candidates = @(
