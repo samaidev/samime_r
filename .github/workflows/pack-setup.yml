@@ -97,7 +97,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path packaging/stage | Out-Null
           Copy-Item ci/wrapper.iss packaging/
           Copy-Item stage/* packaging/stage/ -Recurse -Force
-          & "${{ steps.iscc.outputs.path }}" "/DMyAppName=SamIME" "/DAppId=SAMIME-2026-SAMAIDEV" "/DExeName=samime.exe" "/DMyAppVersion=$v" "/DCnMessages=${{ steps.cnisl.outputs.path }}" "/DOutputBaseFilename=SamIME-$v-windows-amd64-setup.exe" /Q packaging/wrapper.iss
+          & "${{ steps.iscc.outputs.path }}" "/DMyAppName=SamIME" "/DAppId=SAMIME-2026-SAMAIDEV" "/DExeName=samime.exe" "/DMyAppVersion=$v" "/DCnMessages=${{ steps.cnisl.outputs.path }}" "/DOutputBaseFilename=SamIME-$v-windows-amd64-setup" /Q packaging/wrapper.iss
           if ($LASTEXITCODE -ne 0) { throw "ISCC failed with $LASTEXITCODE" }
           Move-Item packaging/dist/*.exe dist/
           Get-ChildItem dist | Select-Object Name, Length
