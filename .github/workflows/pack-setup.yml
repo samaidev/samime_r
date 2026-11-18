@@ -108,7 +108,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = "${{ github.event.inputs.tag }}"
-          $exe = (Get-ChildItem dist/*setup.exe | Select-Object -First 1).Name
+          $exe = (Get-ChildItem dist | Where-Object { $_.Name -like "*setup*.exe" } | Select-Object -First 1).Name
           Write-Host "packed: $exe"
           gh release view $tag --repo $env:GITHUB_REPOSITORY 2>$null
           if ($LASTEXITCODE -ne 0) {
