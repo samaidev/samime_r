@@ -21,7 +21,7 @@
 #endif
 
 [Setup]
-AppId={{#AppId}
+AppId={#AppId}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher=samai.cc
