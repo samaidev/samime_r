@@ -1,0 +1,130 @@
+name: Pack Windows setup.exe
+
+# 从源 release 下载 Windows 产物 → Inno Setup 包装成 setup.exe →
+# 回传本仓 release → 镜像 ModelScope/HuggingFace → 更新统一 catalog。
+# 手动触发：workflow_dispatch（tag 必填）。
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '源 release tag（如 v2.0.4）'
+        required: true
+        default: 'v3.4.20'
+      src_repo:
+        description: '源仓 owner/name（默认本仓）'
+        required: false
+        default: 'samaidev/samime_r'
+      version:
+        description: '版本号（默认取 tag 去 v）'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  pack:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download windows artifacts from source release
+        shell: pwsh
+        env:
+          SRC_TOKEN: ${{ secrets.SRC_TOKEN || github.token }}
+        run: |
+          $src = "${{ github.event.inputs.src_repo }}"
+          if (-not $src) { $src = "$env:GITHUB_REPOSITORY" }
+          $tag = "${{ github.event.inputs.tag }}"
+          $env:GH_TOKEN = $env:SRC_TOKEN
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          gh release download "$tag" --dir dist --repo $src --pattern "SamIME-windows-x64.zip"
+          Get-ChildItem dist | Select-Object Name, Length
+
+      - name: Stage payload
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path stage | Out-Null
+          Expand-Archive dist/SamIME-windows-x64.zip -DestinationPath unpack
+          Copy-Item unpack/* stage/ -Recurse -Force
+          Get-ChildItem stage | Select-Object Name, Length
+
+      - name: Locate Inno Setup (ISCC)
+        shell: pwsh
+        run: |
+          $candidates = @(
+            "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
+            "${env:ProgramFiles}\Inno Setup 6\ISCC.exe"
+          )
+          $iscc = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $iscc) {
+            Write-Host "ISCC not found, installing via Chocolatey..."
+            choco install innosetup -y --no-progress
+            $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          }
+          if (-not (Test-Path $iscc)) { throw "ISCC.exe not found at $iscc" }
+          "path=$iscc" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Resolve Chinese language file
+        id: cnisl
+        shell: pwsh
+        run: |
+          $innoDir = Split-Path "${{ steps.iscc.outputs.path }}"
+          $found = Get-ChildItem -Path $innoDir -Recurse -Filter "ChineseSimplified.isl" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($found) {
+            $cn = $found.FullName
+          } else {
+            $cn = Join-Path $env:RUNNER_TEMP "ChineseSimplified.isl"
+            $urls = @(
+              "https://raw.githubusercontent.com/jrsoftware/issrc/is-6_4_1/Files/Languages/Unofficial/ChineseSimplified.isl",
+              "https://raw.githubusercontent.com/jrsoftware/issrc/is-7_1_1/Files/Languages/ChineseSimplified.isl"
+            )
+            $ok = $false
+            foreach ($u in $urls) {
+              try { Invoke-WebRequest -Uri $u -OutFile $cn; $ok = $true; break } catch { Write-Host "miss: $u" }
+            }
+            if (-not $ok) { throw "Cannot obtain ChineseSimplified.isl" }
+          }
+          "path=$cn" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Build setup.exe (Inno Setup)
+        shell: pwsh
+        run: |
+          $v = "${{ github.event.inputs.version }}"
+          if (-not $v) { $v = "${{ github.event.inputs.tag }}".TrimStart('v') }
+          New-Item -ItemType Directory -Force -Path packaging/stage | Out-Null
+          Copy-Item ci/wrapper.iss packaging/
+          Copy-Item stage/* packaging/stage/ -Recurse -Force
+          & "${{ steps.iscc.outputs.path }}" "/DMyAppName=SamIME" "/DAppId=SAMIME-2026-SAMAIDEV" "/DExeName=samime.exe" "/DMyAppVersion=$v" "/DCnMessages=${{ steps.cnisl.outputs.path }}" "/DOutputBaseFilename=SamIME-$v-windows-amd64-setup.exe" /Q packaging/wrapper.iss
+          if ($LASTEXITCODE -ne 0) { throw "ISCC failed with $LASTEXITCODE" }
+          Move-Item packaging/dist/*.exe dist/
+          Get-ChildItem dist | Select-Object Name, Length
+
+      - name: Upload setup.exe to release (this repo)
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ github.event.inputs.tag }}"
+          $exe = (Get-ChildItem dist/*setup.exe | Select-Object -First 1).Name
+          Write-Host "packed: $exe"
+          gh release view $tag --repo $env:GITHUB_REPOSITORY 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag --repo $env:GITHUB_REPOSITORY --title "$tag" --notes "windows setup.exe auto-packed by pack-setup workflow"
+          }
+          gh release upload $tag "dist/$exe" --repo $env:GITHUB_REPOSITORY --clobber
+
+      - name: Mirror to MS/HF + update catalog
+        shell: bash
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          MS_TOKEN: ${{ secrets.MS_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          pip install huggingface_hub modelscope
+          curl -fsSL -o catalog.json https://raw.githubusercontent.com/samaidev/samai-releases/main/catalog.json
+          python ci/publish_channels.py \
+            --dist dist --product samime --version "${{ github.event.inputs.tag }}" \
+            --repo samaidev/samime_r --gh-release-repo samaidev/samime_r \
+            --catalog catalog.json --glob "samime"
